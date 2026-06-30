@@ -1,0 +1,51 @@
+name: Advanced CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Stage 1 : Tests
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+
+  # Stage 2 : Build via workflow reutilisable
+  build:
+    needs: test
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      image-name: fil-rouge-devops
+      context: .
+
+  # Stage 3 : Deploiement staging (automatique)
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploiement vers staging
+        run: echo "Deploiement en staging de la version ${{ github.sha }}..."
+
+  # Stage 4 : Deploiement production (avec protection)
+  deploy-production:
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploiement vers production
+        run: echo "Deploiement en production de la version ${{ github.sha }}..."

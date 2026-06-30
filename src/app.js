@@ -25,7 +25,8 @@ export function createApp() {
       res.status(400).json({ erreur: "titre requis" });
       return;
     }
-    const tache = { id: prochainId++, titre: titre.trim(), faite: false };
+    const priorite = req.body?.priorite === "haute" ? "haute" : "normale";
+    const tache = { id: prochainId++, titre: titre.trim(), priorite, faite: false };
     taches.set(tache.id, tache);
     res.status(201).json(tache);
   });

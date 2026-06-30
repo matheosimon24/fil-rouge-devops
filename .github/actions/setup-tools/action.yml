@@ -1,0 +1,32 @@
+name: 'Setup DevOps Tools'
+description: 'Installe les outils DevOps courants dans le runner'
+
+inputs:
+  install-terraform:
+    description: 'Installer Terraform'
+    required: false
+    default: 'true'
+  terraform-version:
+    description: 'Version de Terraform'
+    required: false
+    default: '1.7.0'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Installer Terraform
+      if: inputs.install-terraform == 'true'
+      shell: bash
+      run: |
+        wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt-get update && sudo apt-get install -y terraform=${{ inputs.terraform-version }}*
+
+    - name: Verifier les outils disponibles
+      shell: bash
+      run: |
+        echo "--- Outils installes ---"
+        terraform --version || echo "Terraform non installe"
+        docker --version
+        node --version
+        npm --version

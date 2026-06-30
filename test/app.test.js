@@ -55,3 +55,14 @@ test("POST /tasks sans titre renvoie 400", async () => {
   });
   assert.equal(res.status, 400);
 });
+
+test("POST /tasks applique une priorite par defaut", async () => {
+  const res = await fetch(`${base}/tasks`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ titre: "ranger le bureau" }),
+  });
+  assert.equal(res.status, 201);
+  const body = await res.json();
+  assert.equal(body.priorite, "normale");
+});

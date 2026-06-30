@@ -54,3 +54,7 @@ npm run lint
 
 Le store est en mémoire : les tâches disparaissent au redémarrage. C'est voulu, on en reparle au
 jour 3 (processus sans état et parité des environnements).
+
+---
+
+Mise en place réalisée par Matheo Simon — 30 juin 2026

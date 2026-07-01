@@ -17,3 +17,9 @@ coverage/
 # Images et volumes Docker locaux generes par les TP
 *.tar
 .docker/
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+tfplan
